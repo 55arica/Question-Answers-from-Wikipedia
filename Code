@@ -1,0 +1,31 @@
+from langchain.utilities import WikipediaAPIWrapper
+from langchain.agents import Tool
+from langchain.agents import initialize_agent
+from langchain.agents import initialize_agent
+from langchain import OpenAI
+import os
+
+
+wikipedia = WikipediaAPIWrapper()
+wikipedia.run('Langchain')
+
+wikipedia_tool = Tool(
+    name='wikipedia',
+    func= wikipedia.run,
+    description="Useful for when you need to look up a topic, country or person on wikipedia"
+)
+
+os.environ["OPENAI_API_KEY"] = ""
+llm = OpenAI(temperature=0)
+
+
+zero_shot_agent = initialize_agent(
+    agent="zero-shot-react-description",
+    tools=[wikipedia_tool],
+    llm=llm,
+    verbose=True,
+    max_iterations=3,
+)
+
+input_text = input("Enter a prompt: ")
+zero_shot_agent.run(input_text)
